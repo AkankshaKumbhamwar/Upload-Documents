@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="styles.css" type="text/css">
+    </head>
+    <body>
+        <h1>Register Here</h1>
+        <form action="RegisterServlet" method="post">
+            <table border="0">
+                <tbody>
+                    <tr>
+                        <td>First Name:</td>
+                        <td><input type="text" name="fname" value="" required/></td>
+                    </tr>
+                    <tr>
+                        <td>Last Name:</td>
+                        <td><input type="text" name="lname" value="" required/></td>
+                    </tr>
+                    <tr>
+                        <td>Email:</td>
+                        <td><input type="email" name="email" value="" required/></td>
+                    </tr>
+                    <tr>
+                        <td>Phone:</td>
+                        <td><input type="text" id="phoneNumber" name="phone" oninput="validatePhoneNumber()" maxlength="10" required>
+                            <span id="phoneNumberError" style="color:red;"></span></td>
+
+                    </tr>
+                    <tr>
+                        <td>Country:</td>
+                        <td>
+                            <select name="country" id="country" onchange="populateStates()">
+                                <option value="" disabled selected>Select a country</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>State:</td>
+                        <td>
+                            <select name="state" id="state" onchange="populateCities()">
+                                <option value="" disabled selected>Select a state</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>City:</td>
+                        <td>
+                            <select name="city" id="city">
+                                <option value="" disabled selected>Select a city</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Password:</td>
+                        <td><input type="password" name="password" value="" required/></td>
+                    </tr>
+                    <tr>
+                        <td>If registered <a href="login.html">login here</a></td>
+                        <td><input class="button" type="submit" value="Submit" /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <div><h1><a href="login.html">Login</a></h1></div>
+
+        <script>
+            // Dummy country, state, and city data
+            var data = {
+                "countries": [
+                    {
+                        "name": "India",
+                        "states": [
+                            {
+                                "name": "Maharashtra",
+                                "cities": ["Nagpur", "Chandrapur", "Amravati"]
+                            },
+                            {
+                                "name": "Uttar Pradesh",
+                                "cities": ["Aagra", "Mathura", "Prayag Raj", "Ayodhya", "Mahoba"]
+                            }
+                        ]
+                    },
+                    {
+                        "name": "United States",
+                        "states": [
+                            {
+                                "name": "California",
+                                "cities": ["Los Angeles", "San Francisco", "San Diego"]
+                            },
+                            {
+                                "name": "New York",
+                                "cities": ["New York City", "Buffalo", "Albany"]
+                            },
+                            {
+                                "name": "Texas",
+                                "cities": ["Houston", "Austin", "Dallas"]
+                            }
+                        ]
+                    },
+                    {
+                        "name": "United Kingdom",
+                        "states": [
+                            {
+                                "name": "England",
+                                "cities": ["London", "Manchester", "Birmingham"]
+                            },
+                            {
+                                "name": "Scotland",
+                                "cities": ["Edinburgh", "Glasgow", "Aberdeen"]
+                            },
+                            {
+                                "name": "Wales",
+                                "cities": ["Cardiff", "Swansea", "Newport"]
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            // Function to populate countries
+            function populateCountries() {
+                var countrySelect = document.getElementById("country");
+                data.countries.forEach(function (country) {
+                    var option = document.createElement("option");
+                    option.value = country.name;
+                    option.text = country.name;
+                    countrySelect.add(option);
+                });
+            }
+
+            // Function to populate states based on selected country
+            function populateStates() {
+                var countrySelect = document.getElementById("country");
+                var stateSelect = document.getElementById("state");
+                var selectedCountry = countrySelect.value;
+
+                // Clear existing options
+                stateSelect.innerHTML = '<option value="" disabled selected>Select a state</option>';
+
+                // Populate states
+                var selectedCountryObj = data.countries.find(function (country) {
+                    return country.name === selectedCountry;
+                });
+
+                if (selectedCountryObj) {
+                    selectedCountryObj.states.forEach(function (state) {
+                        var option = document.createElement("option");
+                        option.value = state.name;
+                        option.text = state.name;
+                        stateSelect.add(option);
+                    });
+                }
+            }
+
+            // Function to populate cities based on selected state
+            function populateCities() {
+                var stateSelect = document.getElementById("state");
+                var citySelect = document.getElementById("city");
+                var selectedState = stateSelect.value;
+
+                // Clear existing options
+                citySelect.innerHTML = '<option value="" disabled selected>Select a city</option>';
+
+                // Populate cities
+                var selectedCountry = document.getElementById("country").value;
+                var selectedCountryObj = data.countries.find(function (country) {
+                    return country.name === selectedCountry;
+                });
+
+                if (selectedCountryObj) {
+                    var selectedStateObj = selectedCountryObj.states.find(function (state) {
+                        return state.name === selectedState;
+                        
+                    });
+                    
+
+                    if (selectedStateObj) {
+                        selectedStateObj.cities.forEach(function (city) {
+                            var option = document.createElement("option");
+                            option.value = city;
+                            option.text = city;
+                            citySelect.add(option);
+                        });
+                    }
+                }
+            }
+
+            // Populate countries on page load
+            populateCountries();
+
+            //phone number validation
+            function validatePhoneNumber() {
+                var phoneNumber = document.getElementById("phoneNumber").value;
+                if (phoneNumber.length !== 10) {
+                    document.getElementById("phoneNumberError").innerHTML = "Phone number must be 10 digits long!";
+                    return;
+                }
+                document.getElementById("phoneNumberError").innerHTML = "";
+                return;
+            }
+        </script>
+    </body>
+</html>
+
+
+
